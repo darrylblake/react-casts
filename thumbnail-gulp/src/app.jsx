@@ -1,3 +1,6 @@
+var React = require('React');
+var ThumbnailList = require('./thumbnail-list')
+
 var options = {
   thumbnailData: [{
     title: 'See tutorials',
