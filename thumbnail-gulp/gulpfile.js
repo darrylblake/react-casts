@@ -4,6 +4,8 @@ var source = require('vinyl-source-stream'); //
 var browserify = require('browserify'); // Make sure load order is done correctly
 var watchify = require('watchify'); // Automatically rerun gulp when code changes
 var reactify = require('reactify'); // In conjunction with browserify.
+var uglify = require('gulp-uglify');
+
 
 gulp.task('default', function() {
   // bundler is the object that executes the build
@@ -28,3 +30,9 @@ gulp.task('default', function() {
   build();
   bundler.on('update', build);
 });
+
+gulp.task('compress', function() {
+  return gulp.src('main.js')
+    .pipe(uglify())
+    .pipe(gulp.dest('./'));
+})
