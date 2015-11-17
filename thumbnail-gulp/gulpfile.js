@@ -1,12 +1,30 @@
-var gulp = require('gulp');
-var react = require('gulp-react');
-var concat = require('gulp-concat');
+var gulp = require('gulp'); // Responsible for the build process
+var gutil = require('gulp-util'); // Responsible for console logging out build process, debugging
+var source = require('vinyl-source-stream'); // 
+var browserify = require('browserify'); // Make sure load order is done correctly
+var watchify = require('watchify'); // Automatically rerun gulp when code changes
+var reactify = require('reactify'); // In conjunction with browserify.
 
-// Default is immediately run
 gulp.task('default', function() {
-  // Go into src directory and load everything
-  return gulp.src('src/**')
-    .pipe(react())
-    .pipe(concat('application.js'))
-    .pipe(gulp.dest('./'))
+  // bundler is the object that executes the build
+  var bundler = watchify(browserify({
+    entries: ['./src/app.jsx'],
+    transform: [reactify],
+    extensions: ['.jsx'],
+    debug: true,
+    cache: {},
+    packageCache: {},
+    fullPaths: true
+  }));
+
+  function build(file) {
+    if (file) gutil.log('Recompiling ' + file);
+    return bundler
+      .bundle()
+      .on('error', gutil.log.bind(gutil, 'Browserfy Error'))
+      .pipe(source('main.js'))
+      .pipe(gulp.dest('./'));
+  };
+  build();
+  bundler.on('update', build);
 });
